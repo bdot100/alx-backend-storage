@@ -4,7 +4,7 @@
 -- user_id, a users.id value (you can assume user_id is linked to an existing users)
 
 DELIMITER //
-DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUsers;
+DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUser;
 CREATE PROCEDURE ComputeAverageWeightedScoreForUser(
     IN user_id INT
 )
