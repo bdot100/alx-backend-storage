@@ -40,6 +40,33 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """
+    THis function counts the number of timesa 
+    function is called
+    """
+    key = method.__qualname__
+    inputs = key + ":inputs"
+    outputs = key + ":outputs"
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        Wrapper function for the decorated function
+        Args:
+            self: The object instance
+            *args: The arguments passed to the function
+            **kwargs: The keyword arguments passed to the function
+        Returns:
+            The return value of the decorated function
+        """
+        self._redis.rpush(inputs, str(args))
+        data = method(self, *args, **kwargs)
+        self._redis.rpush(outputs, str(data))
+        return data
+
+    return wrapper
+
 
 class Cache:
     """Redis Cache class"""
@@ -51,6 +78,7 @@ class Cache:
         self._redis.flushdb()
         
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         takes a data argument and returns a string.
