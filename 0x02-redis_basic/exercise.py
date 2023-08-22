@@ -13,7 +13,7 @@ bytes, int or float.
 """
 import redis
 import uuid
-from typing import Union
+from typing import Union, Optional, Callable
 
 
 class Cache:
@@ -36,3 +36,35 @@ class Cache:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
+
+
+    def get(self, key: str, fn: Optional[Callable] = None)\
+            -> Union[str, bytes, int, float, None]:
+        """
+        This function gets data from redis cache
+        """
+        retrievd_data = self._redis.get(key)
+        if retrievd_data is not None and fn is not None and callable(fn):
+            return fn(retrievd_data)
+        return retrievd_data
+
+    def get_str(self, key: str) -> str:
+        """
+        This function gets data as string from redis cache
+        Args:
+            key (str): key
+        Returns:
+            str: data
+        """
+        data = self.get(key, lambda x: x.decode('utf-8'))
+        return data
+
+    def get_int(self, key: str) -> int:
+        """
+        This function gets data as integer from redis cache
+        Args:
+            key (str): key
+        Returns:
+            int: data
+        """
+        data = self
