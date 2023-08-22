@@ -13,7 +13,32 @@ bytes, int or float.
 """
 import redis
 import uuid
+from functools import wraps
 from typing import Union, Optional, Callable
+
+
+def count_calls(method: Callable) -> Callable:
+    """
+    this method Counts the number of times a function
+    is called
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        Wrapper function for the decorated function
+        Args:
+            self: The object instance
+            *args: The arguments passed to the function
+            **kwargs: The keyword arguments passed to the function
+        Returns:
+            The return value of the decorated function
+        """
+        key = method.__qualname__
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
 
 
 class Cache:
@@ -38,6 +63,7 @@ class Cache:
         return key
 
 
+    @count_calls
     def get(self, key: str, fn: Optional[Callable] = None)\
             -> Union[str, bytes, int, float, None]:
         """
