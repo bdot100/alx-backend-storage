@@ -42,7 +42,7 @@ def count_calls(method: Callable) -> Callable:
 
 def call_history(method: Callable) -> Callable:
     """
-    THis function counts the number of timesa 
+    THis function counts the number of times a
     function is called
     """
     key = method.__qualname__
@@ -87,7 +87,6 @@ def replay(method: Callable) -> None:
                                      o.decode('utf-8')))
 
 
-
 class Cache:
     """Redis Cache class"""
     def __init__(self) -> None:
@@ -96,7 +95,7 @@ class Cache:
         """
         self._redis = redis.Redis()
         self._redis.flushdb()
-        
+
     @count_calls
     @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
@@ -109,7 +108,6 @@ class Cache:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
-
 
     @count_calls
     def get(self, key: str, fn: Optional[Callable] = None)\
